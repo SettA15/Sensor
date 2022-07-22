@@ -15,6 +15,8 @@ GPIO.setup(GPIO_TRIGGER1, GPIO.OUT)
 GPIO.setup(GPIO_ECHO1, GPIO.IN)
 GPIO.setup(GPIO_TRIGGER2, GPIO.OUT)
 GPIO.setup(GPIO_ECHO2, GPIO.IN)
+GPIO.setup(GPIO_TRIGGER3, GPIO.OUT)
+GPIO.setup(GPIO_ECHO3, GPIO.IN)
  
 def distanceDepan():
     # set Trigger to HIGH
@@ -73,6 +75,35 @@ def distanceKanan():
     kanan = (1E-06*distancekanan*distancekanan) + (1.0055*distancekanan) + 0.0012
  
     return kanan
+
+def distanceKiri():
+    # set Trigger to HIGH
+    GPIO.output(GPIO_TRIGGER3, True)
+ 
+    # set Trigger after 0.01ms to LOW
+    time.sleep(0.00001)
+    GPIO.output(GPIO_TRIGGER3, False)
+    GPIO.setwarnings(False)
+ 
+    StartTime = time.time()
+    StopTime = time.time()
+ 
+    # save StartTime
+    while GPIO.input(GPIO_ECHO3) == 0:
+        StartTime = time.time()
+ 
+    # save time of arrival
+    while GPIO.input(GPIO_ECHO3) == 1:
+        StopTime = time.time()
+ 
+    # time difference between start and arrival
+    TimeElapsed = StopTime - StartTime
+    # multiply with the sonic speed (34300 cm/s)
+    # and divide by 2, because there and back
+    distancekiri = (TimeElapsed * 34300) / 2
+    kiri = (1E-06*distancekiri*distancekiri) + (1.0055*distancekiri) + 0.0012
+ 
+    return kiri
  
 if __name__ == '__main__':
     try:
@@ -82,6 +113,9 @@ if __name__ == '__main__':
             time.sleep(3)
             distB = distanceKanan()
             print ("Jarak Sensor Kanan = %.1f cm" % distB)
+            time.sleep(3)
+            distC = distanceKiri()
+            print ("Jarak Sensor Kiri = %.1f cm" % distC)
             time.sleep(3)
  
         # Reset by pressing CTRL + C
